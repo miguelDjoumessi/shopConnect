@@ -14,14 +14,15 @@ use Doctrine\ORM\Mapping as ORM;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ApiResource(
     operations: [
         new Post(
             uriTemplate: '/pictures/add_picture',
-            // denormalizationContext: ['groups' => ['write:User']],
+            denormalizationContext: ['groups' => [self::GROUP_WRITE]],
             processor: PictureProcessor::class,
-            // normalizationContext: ['groups' => ['read:User']],
+            normalizationContext: ['groups' => [self::GROUP_READ]],
             outputFormats: ['jsonld' => ['application/ld+json']],
             inputFormats: ['multipart' => ['multipart/form-data']]
         )
@@ -31,25 +32,46 @@ use Symfony\Component\HttpFoundation\File\File;
 #[ORM\Entity(repositoryClass: PictureRepository::class)]
 class Picture
 {
+    const GROUP_READ = 'picture:read';
+    const GROUP_WRITE = 'picture:write';
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups([self::GROUP_READ])]
     private ?int $id = null;
 
+    #[Assert\NotNull]
+    #[Groups([self::GROUP_READ, self::GROUP_WRITE])]
+    private ?string $entity = null;
+
+    
+    #[Groups([self::GROUP_READ, self::GROUP_WRITE])]
+    private ?string $context = null;
+    
+    
+    #[Groups([self::GROUP_READ, self::GROUP_WRITE])]
+    private ?string $name = null;
+
+    #[Groups([self::GROUP_READ])]
     #[ApiProperty(types: ['https://schema.org/contentUrl'], writable: false)]
     public ?string $contentUrl = null;
 
     #[Vich\UploadableField(mapping: 'profiles', fileNameProperty: 'filePath')]
     #[Assert\NotNull]
+    #[Groups([self::GROUP_WRITE])]
     public ?File $file = null;
 
+    #[Groups([self::GROUP_READ])]
     #[ApiProperty(writable: false)]
     #[ORM\Column(nullable: true)]
     public ?string $filePath = null;
 
+    #[Groups([self::GROUP_READ])]
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
 
+    #[Groups([self::GROUP_READ])]
     #[ORM\Column]
     private ?\DateTimeImmutable $updatedAt = null;
 
@@ -57,11 +79,13 @@ class Picture
      * @var Collection<int, Shop>
      */
     #[ORM\OneToMany(targetEntity: Shop::class, mappedBy: 'picture')]
+    #[Groups([self::GROUP_READ])]
     private Collection $shops;
 
     /**
      * @var Collection<int, Gallery>
      */
+    #[Groups([self::GROUP_READ])]
     #[ORM\OneToMany(targetEntity: Gallery::class, mappedBy: 'picture')]
     private Collection $galleries;
 
@@ -69,6 +93,7 @@ class Picture
      * @var Collection<int, User>
      */
     #[ORM\OneToMany(targetEntity: User::class, mappedBy: 'profile')]
+    #[Groups([self::GROUP_READ])]
     private Collection $users;
 
     function __construct(DateTimeImmutable $date = new DateTimeImmutable())
@@ -235,6 +260,66 @@ class Picture
                 $user->setProfile(null);
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * Get the value of entity
+     */ 
+    public function getEntity()
+    {
+        return $this->entity;
+    }
+
+    /**
+     * Set the value of entity
+     *
+     * @return  self
+     */ 
+    public function setEntity($entity)
+    {
+        $this->entity = $entity;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of context
+     */ 
+    public function getContext()
+    {
+        return $this->context;
+    }
+
+    /**
+     * Set the value of context
+     *
+     * @return  self
+     */ 
+    public function setContext($context)
+    {
+        $this->context = $context;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of name
+     */ 
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * Set the value of name
+     *
+     * @return  self
+     */ 
+    public function setName($name)
+    {
+        $this->name = $name;
 
         return $this;
     }

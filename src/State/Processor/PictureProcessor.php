@@ -17,8 +17,6 @@ class PictureProcessor implements ProcessorInterface
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = [])
     {
         $this->em->persist($data);
-
-        $data->setFilePath("/images/pictures/" . $data->getFilePath());
         $this->em->flush();
         return $data;
     }
