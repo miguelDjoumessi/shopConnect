@@ -26,6 +26,15 @@ class Order
     #[ORM\Column]
     private ?\DateTimeImmutable $updatedAt = null;
 
+    #[ORM\ManyToOne(inversedBy: 'orders')]
+    private ?User $owner = null;
+
+    #[ORM\ManyToOne(inversedBy: 'orders')]
+    private ?Shop $shop = null;
+
+    #[ORM\ManyToOne(inversedBy: 'orders')]
+    private ?Cart $cart = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -75,6 +84,42 @@ class Order
     public function setUpdatedAt(\DateTimeImmutable $updatedAt): static
     {
         $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    public function getOwner(): ?User
+    {
+        return $this->owner;
+    }
+
+    public function setOwner(?User $owner): static
+    {
+        $this->owner = $owner;
+
+        return $this;
+    }
+
+    public function getShop(): ?Shop
+    {
+        return $this->shop;
+    }
+
+    public function setShop(?Shop $shop): static
+    {
+        $this->shop = $shop;
+
+        return $this;
+    }
+
+    public function getCart(): ?Cart
+    {
+        return $this->cart;
+    }
+
+    public function setCart(?Cart $cart): static
+    {
+        $this->cart = $cart;
 
         return $this;
     }

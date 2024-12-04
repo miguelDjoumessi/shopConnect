@@ -22,6 +22,9 @@ class Promotion
     #[ORM\Column]
     private ?\DateTimeImmutable $finishedAt = null;
 
+    #[ORM\ManyToOne(inversedBy: 'promotions')]
+    private ?Inventory $inventory = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -59,6 +62,18 @@ class Promotion
     public function setFinishedAt(\DateTimeImmutable $finishedAt): static
     {
         $this->finishedAt = $finishedAt;
+
+        return $this;
+    }
+
+    public function getInventory(): ?Inventory
+    {
+        return $this->inventory;
+    }
+
+    public function setInventory(?Inventory $inventory): static
+    {
+        $this->inventory = $inventory;
 
         return $this;
     }

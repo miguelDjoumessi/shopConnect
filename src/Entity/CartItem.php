@@ -22,6 +22,12 @@ class CartItem
     #[ORM\Column]
     private ?\DateTimeImmutable $updatedAt = null;
 
+    #[ORM\ManyToOne(inversedBy: 'cartItems')]
+    private ?Cart $cart = null;
+
+    #[ORM\ManyToOne(inversedBy: 'cartItems')]
+    private ?Inventory $inventory = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -59,6 +65,30 @@ class CartItem
     public function setUpdatedAt(\DateTimeImmutable $updatedAt): static
     {
         $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    public function getCart(): ?Cart
+    {
+        return $this->cart;
+    }
+
+    public function setCart(?Cart $cart): static
+    {
+        $this->cart = $cart;
+
+        return $this;
+    }
+
+    public function getInventory(): ?Inventory
+    {
+        return $this->inventory;
+    }
+
+    public function setInventory(?Inventory $inventory): static
+    {
+        $this->inventory = $inventory;
 
         return $this;
     }
